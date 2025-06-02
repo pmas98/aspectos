@@ -1,0 +1,147 @@
+import java_cup.runtime.*;
+
+// Classe para símbolos
+parser code {:
+    private Scanner scanner;
+    
+    public Parser(Scanner scanner) {
+        super(scanner);
+        this.scanner = scanner;
+    }
+    
+    public void report_error(String message, Object info) {
+        System.err.println("Erro de sintaxe: " + message);
+    }
+    
+    public void report_fatal_error(String message, Object info) {
+        System.err.println("Erro fatal: " + message);
+        throw new RuntimeException("Erro fatal durante parsing");
+    }
+:};
+
+// Símbolos terminais
+terminal IF, ELSE, WHILE, RETURN;
+terminal INT, FLOAT, VOID;
+terminal PLUS, MINUS, MULT, DIV, ASSIGN;
+terminal EQ, NEQ, LT, LE, GT, GE;
+terminal SEMICOLON, COMMA, LPAREN, RPAREN, LBRACE, RBRACE;
+terminal NOT, AND, OR;
+terminal FOR, MAIN;
+terminal String ID;
+terminal Integer INT_CONST;
+terminal Float FLOAT_CONST;
+
+// Símbolos não-terminais
+non terminal program;
+non terminal declaration_list, declaration;
+non terminal var_declaration, fun_declaration;
+non terminal type_specifier;
+non terminal params, param_list, param;
+non terminal compound_stmt, local_declarations, statement_list;
+non terminal statement, expression_stmt, selection_stmt, iteration_stmt, return_stmt;
+non terminal expression, var, simple_expression, additive_expression, term, factor, call;
+non terminal relop, addop, mulop;
+non terminal arg_list, args;
+
+// Precedência (menor para maior)
+precedence left ELSE;
+precedence left EQ, NEQ;
+precedence left LT, LE, GT, GE;
+precedence left PLUS, MINUS;
+precedence left MULT, DIV;
+precedence right NOT;
+
+// Gramática
+start with program;
+
+program ::= declaration_list:dl
+    {: System.out.println("Programa parseado com sucesso!"); :};
+
+declaration_list ::= declaration_list declaration
+    | declaration;
+
+declaration ::= var_declaration
+    | fun_declaration;
+
+var_declaration ::= type_specifier ID:id SEMICOLON
+    {: System.out.println("Declaração de variável: " + id); :};
+
+fun_declaration ::= type_specifier ID:id LPAREN params RPAREN compound_stmt
+    {: System.out.println("Declaração de função: " + id); :}
+    | VOID ID:id LPAREN params RPAREN compound_stmt
+    {: System.out.println("Declaração de função void: " + id); :};
+
+type_specifier ::= INT | FLOAT;
+
+params ::= param_list | VOID | /* vazio */;
+
+param_list ::= param_list COMMA param | param;
+
+param ::= type_specifier ID:id
+    {: System.out.println("Parâmetro: " + id); :};
+
+compound_stmt ::= LBRACE local_declarations statement_list RBRACE;
+
+local_declarations ::= local_declarations var_declaration | /* vazio */;
+
+statement_list ::= statement_list statement | /* vazio */;
+
+statement ::= expression_stmt
+    | compound_stmt
+    | selection_stmt
+    | iteration_stmt
+    | return_stmt;
+
+expression_stmt ::= expression SEMICOLON | SEMICOLON;
+
+selection_stmt ::= IF LPAREN expression RPAREN statement
+    {: System.out.println("Comando IF"); :}
+    | IF LPAREN expression RPAREN statement ELSE statement
+    {: System.out.println("Comando IF-ELSE"); :};
+
+iteration_stmt ::= WHILE LPAREN expression RPAREN statement
+    {: System.out.println("Comando WHILE"); :};
+
+return_stmt ::= RETURN SEMICOLON
+    {: System.out.println("Comando RETURN"); :}
+    | RETURN expression SEMICOLON
+    {: System.out.println("Comando RETURN com expressão"); :};
+
+expression ::= var ASSIGN expression
+    {: System.out.println("Atribuição"); :}
+    | simple_expression;
+
+var ::= ID:id
+    {: System.out.println("Variável: " + id); :};
+
+simple_expression ::= additive_expression relop additive_expression
+    | additive_expression;
+
+additive_expression ::= additive_expression addop term
+    | term;
+
+term ::= term mulop factor
+    | factor;
+
+factor ::= LPAREN expression RPAREN
+    | NOT factor
+    {: System.out.println("Operador NOT"); :}
+    | var
+    | call
+    | INT_CONST:n
+    {: System.out.println("Constante inteira: " + n); :}
+    | FLOAT_CONST:f
+    {: System.out.println("Constante float: " + f); :};
+
+call ::= ID:id LPAREN args RPAREN
+    {: System.out.println("Chamada de função: " + id); :};
+
+args ::= arg_list | /* vazio */;
+
+arg_list ::= arg_list COMMA expression | expression;
+
+relop ::= LE | LT | GT | GE | EQ | NEQ;
+
+addop ::= PLUS | MINUS;
+
+mulop ::= MULT | DIV;

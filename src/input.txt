@@ -1,0 +1,59 @@
+// Declaração de variáveis globais
+int globalVar;
+float pi;
+
+// Função principal
+int main(void) {
+    int x;
+    int y;
+    int resultado;
+    float media;
+    
+    // Atribuições
+    x = 10;
+    y = 20;
+    pi = 3.14159;
+    
+    // Operações aritméticas
+    resultado = x + y * 2;
+    media = (x + y) / 2.0;
+    
+    // Estrutura condicional
+    if (x < y) {
+        resultado = y - x;
+    } else {
+        resultado = x - y;
+    }
+    
+    // Laço while
+    while (x > 0) {
+        x = x - 1;
+        y = y + 1;
+    }
+    
+    return resultado;
+}
+
+// Função auxiliar
+int calcular(int a, int b) {
+    int temp;
+    
+    if (a >= b) {
+        temp = a + b;
+    } else {
+        temp = a * b;
+    }
+    
+    return temp;
+}
+
+// Função sem retorno
+void imprimir(int valor) {
+    // Simulação de impressão
+    int dummy;
+    dummy = valor;
+    
+    if (valor != 0) {
+        dummy = dummy + 1;
+    }
+}
