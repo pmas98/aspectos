@@ -1,147 +1,164 @@
+// parser.cup
+
+// -------------------- Package and Imports --------------------
+// Removed package declaration to use default package
 import java_cup.runtime.*;
 
-// Classe para símbolos
-parser code {:
-    private Scanner scanner;
-    
-    public Parser(Scanner scanner) {
-        super(scanner);
-        this.scanner = scanner;
-    }
-    
-    public void report_error(String message, Object info) {
-        System.err.println("Erro de sintaxe: " + message);
-    }
-    
-    public void report_fatal_error(String message, Object info) {
-        System.err.println("Erro fatal: " + message);
-        throw new RuntimeException("Erro fatal durante parsing");
-    }
-:};
+// -------------------- Terminal Declarations --------------------
+// These are the tokens (lexemes) returned by your JFlex scanner.
+// Keywords
+terminal IS, HAS, WHEN, ELSE, LOOP, SAY, DO, DONE, MAKE, FUNCTION, USE;
+terminal NOT, SAME, AS;
+terminal BE, AND, OR, CAN;  // Added missing terminals that are used in scanner
 
-// Símbolos terminais
-terminal IF, ELSE, WHILE, RETURN;
-terminal INT, FLOAT, VOID;
-terminal PLUS, MINUS, MULT, DIV, ASSIGN;
-terminal EQ, NEQ, LT, LE, GT, GE;
-terminal SEMICOLON, COMMA, LPAREN, RPAREN, LBRACE, RBRACE;
-terminal NOT, AND, OR;
-terminal FOR, MAIN;
-terminal String ID;
-terminal Integer INT_CONST;
-terminal Float FLOAT_CONST;
+// Operators
+terminal PLUS, MINUS, MULT, DIV;
 
-// Símbolos não-terminais
-non terminal program;
-non terminal declaration_list, declaration;
-non terminal var_declaration, fun_declaration;
-non terminal type_specifier;
-non terminal params, param_list, param;
-non terminal compound_stmt, local_declarations, statement_list;
-non terminal statement, expression_stmt, selection_stmt, iteration_stmt, return_stmt;
-non terminal expression, var, simple_expression, additive_expression, term, factor, call;
-non terminal relop, addop, mulop;
-non terminal arg_list, args;
+// Delimiters
+terminal LPAREN, RPAREN, SEMICOLON;
 
-// Precedência (menor para maior)
-precedence left ELSE;
-precedence left EQ, NEQ;
-precedence left LT, LE, GT, GE;
-precedence left PLUS, MINUS;
-precedence left MULT, DIV;
-precedence right NOT;
+// Literals and Identifiers (with associated value types if any)
+terminal String ID;          // Identifier, e.g., BABA, APPLE
+terminal Integer INT_CONST;   // Integer constant, e.g., 0, 1, 5
+terminal Float FLOAT_CONST; // Float constant, e.g., 3.14 (supported by scanner)
+terminal String STRING_CONST;// String constant, e.g., "BLOCKED", "YAY"
 
-// Gramática
+// Note: Terminals CAN, BE, AND, OR from the scanner are not used in the
+// provided grammar examples, so they are omitted here. If needed, they
+// should be declared and incorporated into the grammar rules.
+
+
+// -------------------- Non-Terminal Declarations --------------------
+// These are the syntactic categories used in the grammar rules.
+non terminal program;              // The root of the grammar
+non terminal statement_list;       // A sequence of statements
+non terminal statement;            // A single statement
+
+non terminal variable_declaration; // e.g., BABA HAS 5
+non terminal assignment_statement; // e.g., APPLE IS APPLE + 1
+non terminal if_statement;        // WHEN ... DO ... ELSE ... DONE
+non terminal while_statement;     // LOOP ... DO ... DONE
+non terminal function_definition; // MAKE FUNCTION ... DO ... DONE
+non terminal function_call;       // USE ...
+non terminal say_statement;       // SAY ...
+
+non terminal expression;           // General expression (arithmetic, ID, or string)
+non terminal arithmetic_expression;// For arithmetic operations specifically
+non terminal boolean_expression;    // For conditions in WHEN/LOOP
+
+
+// -------------------- Precedences and Associativity --------------------
+// Defines operator precedence to resolve ambiguities in expressions.
+// Lowest precedence at the top, highest at the bottom.
+precedence left PLUS, MINUS;        // Addition and subtraction (left-associative)
+precedence left MULT, DIV;          // Multiplication and division (left-associative)
+// Comparison keywords (IS, SAME, AS, NOT) are handled structurally in boolean_expression rules,
+// not via precedence here, to match the "phrase-like" structure.
+
+
+// -------------------- The Grammar Rules --------------------
+// Defines the syntactic structure of the language.
+
+// The start symbol for the grammar
 start with program;
 
-program ::= declaration_list:dl
-    {: System.out.println("Programa parseado com sucesso!"); :};
+// a. Estrutura do programa
+program ::=
+    statement_list
+    ;
 
-declaration_list ::= declaration_list declaration
-    | declaration;
+statement_list ::=
+    statement
+    | statement_list statement
+    ;
 
-declaration ::= var_declaration
-    | fun_declaration;
+statement ::=
+    variable_declaration SEMICOLON
+    | assignment_statement SEMICOLON
+    | if_statement
+    | while_statement
+    | function_definition
+    | function_call SEMICOLON
+    | say_statement SEMICOLON
+    // | error // Uncomment and refine for error recovery if needed
+    ;
 
-var_declaration ::= type_specifier ID:id SEMICOLON
-    {: System.out.println("Declaração de variável: " + id); :};
+// b. Declaração de variáveis
+// Example: APPLE HAS 1
+// Example: BABA HAS 5
+variable_declaration ::=
+    ID HAS expression
+    ;
 
-fun_declaration ::= type_specifier ID:id LPAREN params RPAREN compound_stmt
-    {: System.out.println("Declaração de função: " + id); :}
-    | VOID ID:id LPAREN params RPAREN compound_stmt
-    {: System.out.println("Declaração de função void: " + id); :};
+// e. Expressões e atribuições (Assignment)
+// Example: APPLE IS APPLE + 1
+// Example: BABA IS BABA - 1
+assignment_statement ::=
+    ID IS expression
+    ;
 
-type_specifier ::= INT | FLOAT;
+// c. Estruturas de controle
+// If-Else
+// Example: WHEN BABA IS SAME AS WALL DO SAY "BLOCKED" ELSE SAY "MOVE" DONE
+// Example: WHEN APPLE IS SAME AS 2 DO SAY "YAY" DONE
+if_statement ::=
+    WHEN boolean_expression DO statement_list DONE
+    | WHEN boolean_expression DO statement_list ELSE statement_list DONE
+    ;
 
-params ::= param_list | VOID | /* vazio */;
+// While
+// Example: LOOP BABA IS NOT 0 DO SAY BABA BABA IS BABA - 1 DONE
+while_statement ::=
+    LOOP boolean_expression DO statement_list DONE
+    ;
 
-param_list ::= param_list COMMA param | param;
+// d. Definições e chamadas de funções
+// Definition
+// Example: MAKE FUNCTION ADD_TWO X DO X IS X + 2 SAY X DONE
+function_definition ::=
+    MAKE FUNCTION ID:funcName ID:paramName DO statement_list DONE
+    ;
 
-param ::= type_specifier ID:id
-    {: System.out.println("Parâmetro: " + id); :};
+// Call
+// Example: USE ADD_TWO 3
+function_call ::=
+    USE ID:funcName expression:arg
+    ;
 
-compound_stmt ::= LBRACE local_declarations statement_list RBRACE;
+// Say statement (Output)
+// Example: SAY "BLOCKED"
+// Example: SAY BABA
+// Example: SAY FACT
+say_statement ::=
+    SAY expression
+    ;
 
-local_declarations ::= local_declarations var_declaration | /* vazio */;
+// Boolean Expressions for WHEN and LOOP conditions
+// Example: BABA IS SAME AS WALL
+// Example: APPLE IS SAME AS 2
+// Example: BABA IS NOT 0
+// Example: BABA IS NOT 1
+boolean_expression ::=
+    expression:e1 IS SAME AS expression:e2
+    | expression:e1 IS NOT expression:e2 // Handles "IS NOT" as a phrase
+    ;
 
-statement_list ::= statement_list statement | /* vazio */;
+// General expression: can be an arithmetic expression or a string constant.
+// Used where either type is valid (e.g., assignment, say, comparison operands).
+expression ::=
+    arithmetic_expression
+    | STRING_CONST:strVal
+    ;
 
-statement ::= expression_stmt
-    | compound_stmt
-    | selection_stmt
-    | iteration_stmt
-    | return_stmt;
-
-expression_stmt ::= expression SEMICOLON | SEMICOLON;
-
-selection_stmt ::= IF LPAREN expression RPAREN statement
-    {: System.out.println("Comando IF"); :}
-    | IF LPAREN expression RPAREN statement ELSE statement
-    {: System.out.println("Comando IF-ELSE"); :};
-
-iteration_stmt ::= WHILE LPAREN expression RPAREN statement
-    {: System.out.println("Comando WHILE"); :};
-
-return_stmt ::= RETURN SEMICOLON
-    {: System.out.println("Comando RETURN"); :}
-    | RETURN expression SEMICOLON
-    {: System.out.println("Comando RETURN com expressão"); :};
-
-expression ::= var ASSIGN expression
-    {: System.out.println("Atribuição"); :}
-    | simple_expression;
-
-var ::= ID:id
-    {: System.out.println("Variável: " + id); :};
-
-simple_expression ::= additive_expression relop additive_expression
-    | additive_expression;
-
-additive_expression ::= additive_expression addop term
-    | term;
-
-term ::= term mulop factor
-    | factor;
-
-factor ::= LPAREN expression RPAREN
-    | NOT factor
-    {: System.out.println("Operador NOT"); :}
-    | var
-    | call
-    | INT_CONST:n
-    {: System.out.println("Constante inteira: " + n); :}
-    | FLOAT_CONST:f
-    {: System.out.println("Constante float: " + f); :};
-
-call ::= ID:id LPAREN args RPAREN
-    {: System.out.println("Chamada de função: " + id); :};
-
-args ::= arg_list | /* vazio */;
-
-arg_list ::= arg_list COMMA expression | expression;
-
-relop ::= LE | LT | GT | GE | EQ | NEQ;
-
-addop ::= PLUS | MINUS;
-
-mulop ::= MULT | DIV;
+// Arithmetic expressions: operations, parentheses, identifiers, and numeric constants.
+// Precedence rules (PLUS, MINUS, MULT, DIV) apply here.
+arithmetic_expression ::=
+    arithmetic_expression:e1 PLUS arithmetic_expression:e2
+    | arithmetic_expression:e1 MINUS arithmetic_expression:e2
+    | arithmetic_expression:e1 MULT arithmetic_expression:e2
+    | arithmetic_expression:e1 DIV arithmetic_expression:e2
+    | LPAREN arithmetic_expression:e RPAREN
+    | ID:name
+    | INT_CONST:val
+    | FLOAT_CONST:fVal // Included as scanner supports it
+    ;

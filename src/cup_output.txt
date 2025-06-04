@@ -1,0 +1,1010 @@
+Warning : Terminal "AND" was declared but never used
+Warning : Terminal "OR" was declared but never used
+Warning : Terminal "CAN" was declared but never used
+Warning : Terminal "BE" was declared but never used
+===== Terminals =====
+[0]EOF [1]error [2]IS [3]HAS [4]WHEN 
+[5]ELSE [6]LOOP [7]SAY [8]DO [9]DONE 
+[10]MAKE [11]FUNCTION [12]USE [13]NOT [14]SAME 
+[15]AS [16]BE [17]AND [18]OR [19]CAN 
+[20]PLUS [21]MINUS [22]MULT [23]DIV [24]LPAREN 
+[25]RPAREN [26]SEMICOLON [27]ID [28]INT_CONST [29]FLOAT_CONST 
+[30]STRING_CONST 
+
+===== Non terminals =====
+[0]program [1]statement_list [2]statement [3]variable_declaration [4]assignment_statement 
+[5]if_statement [6]while_statement [7]function_definition [8]function_call [9]say_statement 
+[10]expression [11]arithmetic_expression [12]boolean_expression 
+
+===== Productions =====
+[0] $START ::= program EOF 
+[1] program ::= statement_list 
+[2] statement_list ::= statement 
+[3] statement_list ::= statement_list statement 
+[4] statement ::= variable_declaration SEMICOLON 
+[5] statement ::= assignment_statement SEMICOLON 
+[6] statement ::= if_statement 
+[7] statement ::= while_statement 
+[8] statement ::= function_definition 
+[9] statement ::= function_call SEMICOLON 
+[10] statement ::= say_statement SEMICOLON 
+[11] variable_declaration ::= ID HAS expression 
+[12] assignment_statement ::= ID IS expression 
+[13] if_statement ::= WHEN boolean_expression DO statement_list DONE 
+[14] if_statement ::= WHEN boolean_expression DO statement_list ELSE statement_list DONE 
+[15] while_statement ::= LOOP boolean_expression DO statement_list DONE 
+[16] function_definition ::= MAKE FUNCTION ID ID DO statement_list DONE 
+[17] function_call ::= USE ID expression 
+[18] say_statement ::= SAY expression 
+[19] boolean_expression ::= expression IS SAME AS expression 
+[20] boolean_expression ::= expression IS NOT expression 
+[21] expression ::= arithmetic_expression 
+[22] expression ::= STRING_CONST 
+[23] arithmetic_expression ::= arithmetic_expression PLUS arithmetic_expression 
+[24] arithmetic_expression ::= arithmetic_expression MINUS arithmetic_expression 
+[25] arithmetic_expression ::= arithmetic_expression MULT arithmetic_expression 
+[26] arithmetic_expression ::= arithmetic_expression DIV arithmetic_expression 
+[27] arithmetic_expression ::= LPAREN arithmetic_expression RPAREN 
+[28] arithmetic_expression ::= ID 
+[29] arithmetic_expression ::= INT_CONST 
+[30] arithmetic_expression ::= FLOAT_CONST 
+
+===== Viable Prefix Recognizer =====
+START lalr_state [0]: {
+  [statement ::= (*) assignment_statement SEMICOLON , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement_list ::= (*) statement_list statement , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) function_definition , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [program ::= (*) statement_list , {EOF }]
+  [statement ::= (*) if_statement , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) function_call SEMICOLON , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement_list ::= (*) statement , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) while_statement , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+  [$START ::= (*) program EOF , {EOF }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on statement_list to state [11]
+transition on say_statement to state [10]
+transition on statement to state [9]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on SAY to state [6]
+transition on WHEN to state [5]
+transition on function_call to state [4]
+transition on program to state [3]
+transition on LOOP to state [2]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [1]: {
+  [statement ::= function_definition (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [2]: {
+  [boolean_expression ::= (*) expression IS NOT expression , {DO }]
+  [arithmetic_expression ::= (*) ID , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {IS PLUS MINUS MULT DIV }]
+  [expression ::= (*) STRING_CONST , {IS }]
+  [boolean_expression ::= (*) expression IS SAME AS expression , {DO }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {IS PLUS MINUS MULT DIV }]
+  [expression ::= (*) arithmetic_expression , {IS }]
+  [while_statement ::= LOOP (*) boolean_expression DO statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [arithmetic_expression ::= (*) INT_CONST , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {IS PLUS MINUS MULT DIV }]
+}
+transition on expression to state [51]
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on boolean_expression to state [66]
+transition on arithmetic_expression to state [31]
+transition on STRING_CONST to state [30]
+transition on ID to state [29]
+
+-------------------
+lalr_state [3]: {
+  [$START ::= program (*) EOF , {EOF }]
+}
+transition on EOF to state [65]
+
+-------------------
+lalr_state [4]: {
+  [statement ::= function_call (*) SEMICOLON , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on SEMICOLON to state [64]
+
+-------------------
+lalr_state [5]: {
+  [boolean_expression ::= (*) expression IS NOT expression , {DO }]
+  [if_statement ::= WHEN (*) boolean_expression DO statement_list ELSE statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [arithmetic_expression ::= (*) ID , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {IS PLUS MINUS MULT DIV }]
+  [expression ::= (*) STRING_CONST , {IS }]
+  [boolean_expression ::= (*) expression IS SAME AS expression , {DO }]
+  [if_statement ::= WHEN (*) boolean_expression DO statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {IS PLUS MINUS MULT DIV }]
+  [expression ::= (*) arithmetic_expression , {IS }]
+  [arithmetic_expression ::= (*) INT_CONST , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {IS PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {IS PLUS MINUS MULT DIV }]
+}
+transition on expression to state [51]
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on boolean_expression to state [50]
+transition on arithmetic_expression to state [31]
+transition on STRING_CONST to state [30]
+transition on ID to state [29]
+
+-------------------
+lalr_state [6]: {
+  [arithmetic_expression ::= (*) ID , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [expression ::= (*) STRING_CONST , {SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [say_statement ::= SAY (*) expression , {SEMICOLON }]
+  [expression ::= (*) arithmetic_expression , {SEMICOLON }]
+  [arithmetic_expression ::= (*) INT_CONST , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+}
+transition on expression to state [49]
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [31]
+transition on STRING_CONST to state [30]
+transition on ID to state [29]
+
+-------------------
+lalr_state [7]: {
+  [function_call ::= USE (*) ID expression , {SEMICOLON }]
+}
+transition on ID to state [47]
+
+-------------------
+lalr_state [8]: {
+  [assignment_statement ::= ID (*) IS expression , {SEMICOLON }]
+  [variable_declaration ::= ID (*) HAS expression , {SEMICOLON }]
+}
+transition on IS to state [28]
+transition on HAS to state [27]
+
+-------------------
+lalr_state [9]: {
+  [statement_list ::= statement (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [10]: {
+  [statement ::= say_statement (*) SEMICOLON , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on SEMICOLON to state [26]
+
+-------------------
+lalr_state [11]: {
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [statement ::= (*) function_definition , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) assignment_statement SEMICOLON , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) while_statement , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [program ::= statement_list (*) , {EOF }]
+  [statement ::= (*) variable_declaration SEMICOLON , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [statement ::= (*) function_call SEMICOLON , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement ::= (*) if_statement , {EOF WHEN LOOP SAY MAKE USE ID }]
+  [statement_list ::= statement_list (*) statement , {EOF WHEN LOOP SAY MAKE USE ID }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on say_statement to state [10]
+transition on statement to state [24]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on WHEN to state [5]
+transition on SAY to state [6]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [12]: {
+  [statement ::= while_statement (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [13]: {
+  [statement ::= if_statement (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [14]: {
+  [statement ::= variable_declaration (*) SEMICOLON , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on SEMICOLON to state [25]
+
+-------------------
+lalr_state [15]: {
+  [function_definition ::= MAKE (*) FUNCTION ID ID DO statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on FUNCTION to state [18]
+
+-------------------
+lalr_state [16]: {
+  [statement ::= assignment_statement (*) SEMICOLON , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on SEMICOLON to state [17]
+
+-------------------
+lalr_state [17]: {
+  [statement ::= assignment_statement SEMICOLON (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [18]: {
+  [function_definition ::= MAKE FUNCTION (*) ID ID DO statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on ID to state [19]
+
+-------------------
+lalr_state [19]: {
+  [function_definition ::= MAKE FUNCTION ID (*) ID DO statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on ID to state [20]
+
+-------------------
+lalr_state [20]: {
+  [function_definition ::= MAKE FUNCTION ID ID (*) DO statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on DO to state [21]
+
+-------------------
+lalr_state [21]: {
+  [statement ::= (*) assignment_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= (*) statement_list statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_definition , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [function_definition ::= MAKE FUNCTION ID ID DO (*) statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) if_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_call SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= (*) statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) while_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on statement_list to state [22]
+transition on say_statement to state [10]
+transition on statement to state [9]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on SAY to state [6]
+transition on WHEN to state [5]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [22]: {
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [function_definition ::= MAKE FUNCTION ID ID DO statement_list (*) DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_definition , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) assignment_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) while_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [statement ::= (*) function_call SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) if_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= statement_list (*) statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on say_statement to state [10]
+transition on statement to state [24]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on WHEN to state [5]
+transition on SAY to state [6]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on DONE to state [23]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [23]: {
+  [function_definition ::= MAKE FUNCTION ID ID DO statement_list DONE (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [24]: {
+  [statement_list ::= statement_list statement (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [25]: {
+  [statement ::= variable_declaration SEMICOLON (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [26]: {
+  [statement ::= say_statement SEMICOLON (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [27]: {
+  [variable_declaration ::= ID HAS (*) expression , {SEMICOLON }]
+  [arithmetic_expression ::= (*) ID , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [expression ::= (*) STRING_CONST , {SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [expression ::= (*) arithmetic_expression , {SEMICOLON }]
+  [arithmetic_expression ::= (*) INT_CONST , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+}
+transition on expression to state [46]
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [31]
+transition on STRING_CONST to state [30]
+transition on ID to state [29]
+
+-------------------
+lalr_state [28]: {
+  [arithmetic_expression ::= (*) ID , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [expression ::= (*) STRING_CONST , {SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [expression ::= (*) arithmetic_expression , {SEMICOLON }]
+  [assignment_statement ::= ID IS (*) expression , {SEMICOLON }]
+  [arithmetic_expression ::= (*) INT_CONST , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+}
+transition on expression to state [35]
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [31]
+transition on STRING_CONST to state [30]
+transition on ID to state [29]
+
+-------------------
+lalr_state [29]: {
+  [arithmetic_expression ::= ID (*) , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+
+-------------------
+lalr_state [30]: {
+  [expression ::= STRING_CONST (*) , {IS DO SEMICOLON }]
+}
+
+-------------------
+lalr_state [31]: {
+  [arithmetic_expression ::= arithmetic_expression (*) MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV SEMICOLON }]
+  [expression ::= arithmetic_expression (*) , {IS DO SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV SEMICOLON }]
+}
+transition on DIV to state [41]
+transition on MINUS to state [40]
+transition on PLUS to state [39]
+transition on MULT to state [38]
+
+-------------------
+lalr_state [32]: {
+  [arithmetic_expression ::= (*) ID , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= LPAREN (*) arithmetic_expression RPAREN , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= (*) INT_CONST , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {PLUS MINUS MULT DIV RPAREN }]
+}
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [36]
+transition on ID to state [29]
+
+-------------------
+lalr_state [33]: {
+  [arithmetic_expression ::= FLOAT_CONST (*) , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+
+-------------------
+lalr_state [34]: {
+  [arithmetic_expression ::= INT_CONST (*) , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+
+-------------------
+lalr_state [35]: {
+  [assignment_statement ::= ID IS expression (*) , {SEMICOLON }]
+}
+
+-------------------
+lalr_state [36]: {
+  [arithmetic_expression ::= arithmetic_expression (*) MINUS arithmetic_expression , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= arithmetic_expression (*) DIV arithmetic_expression , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= arithmetic_expression (*) PLUS arithmetic_expression , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= arithmetic_expression (*) MULT arithmetic_expression , {PLUS MINUS MULT DIV RPAREN }]
+  [arithmetic_expression ::= LPAREN arithmetic_expression (*) RPAREN , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on DIV to state [41]
+transition on MINUS to state [40]
+transition on PLUS to state [39]
+transition on MULT to state [38]
+transition on RPAREN to state [37]
+
+-------------------
+lalr_state [37]: {
+  [arithmetic_expression ::= LPAREN arithmetic_expression RPAREN (*) , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+
+-------------------
+lalr_state [38]: {
+  [arithmetic_expression ::= arithmetic_expression MULT (*) arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) ID , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) INT_CONST , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [45]
+transition on ID to state [29]
+
+-------------------
+lalr_state [39]: {
+  [arithmetic_expression ::= (*) ID , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression PLUS (*) arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) INT_CONST , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [44]
+transition on ID to state [29]
+
+-------------------
+lalr_state [40]: {
+  [arithmetic_expression ::= (*) ID , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression MINUS (*) arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) INT_CONST , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [43]
+transition on ID to state [29]
+
+-------------------
+lalr_state [41]: {
+  [arithmetic_expression ::= (*) ID , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression DIV (*) arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) INT_CONST , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [42]
+transition on ID to state [29]
+
+-------------------
+lalr_state [42]: {
+  [arithmetic_expression ::= arithmetic_expression (*) MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression DIV arithmetic_expression (*) , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on DIV to state [41]
+transition on MINUS to state [40]
+transition on PLUS to state [39]
+transition on MULT to state [38]
+
+-------------------
+lalr_state [43]: {
+  [arithmetic_expression ::= arithmetic_expression (*) MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression MINUS arithmetic_expression (*) , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on DIV to state [41]
+transition on MINUS to state [40]
+transition on PLUS to state [39]
+transition on MULT to state [38]
+
+-------------------
+lalr_state [44]: {
+  [arithmetic_expression ::= arithmetic_expression (*) MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression PLUS arithmetic_expression (*) , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on DIV to state [41]
+transition on MINUS to state [40]
+transition on PLUS to state [39]
+transition on MULT to state [38]
+
+-------------------
+lalr_state [45]: {
+  [arithmetic_expression ::= arithmetic_expression (*) MINUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) DIV arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) PLUS arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression MULT arithmetic_expression (*) , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+  [arithmetic_expression ::= arithmetic_expression (*) MULT arithmetic_expression , {IS DO PLUS MINUS MULT DIV RPAREN SEMICOLON }]
+}
+transition on DIV to state [41]
+transition on MINUS to state [40]
+transition on PLUS to state [39]
+transition on MULT to state [38]
+
+-------------------
+lalr_state [46]: {
+  [variable_declaration ::= ID HAS expression (*) , {SEMICOLON }]
+}
+
+-------------------
+lalr_state [47]: {
+  [arithmetic_expression ::= (*) ID , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [expression ::= (*) STRING_CONST , {SEMICOLON }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [expression ::= (*) arithmetic_expression , {SEMICOLON }]
+  [arithmetic_expression ::= (*) INT_CONST , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {PLUS MINUS MULT DIV SEMICOLON }]
+  [function_call ::= USE ID (*) expression , {SEMICOLON }]
+}
+transition on INT_CONST to state [34]
+transition on expression to state [48]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [31]
+transition on STRING_CONST to state [30]
+transition on ID to state [29]
+
+-------------------
+lalr_state [48]: {
+  [function_call ::= USE ID expression (*) , {SEMICOLON }]
+}
+
+-------------------
+lalr_state [49]: {
+  [say_statement ::= SAY expression (*) , {SEMICOLON }]
+}
+
+-------------------
+lalr_state [50]: {
+  [if_statement ::= WHEN boolean_expression (*) DO statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= WHEN boolean_expression (*) DO statement_list ELSE statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on DO to state [58]
+
+-------------------
+lalr_state [51]: {
+  [boolean_expression ::= expression (*) IS NOT expression , {DO }]
+  [boolean_expression ::= expression (*) IS SAME AS expression , {DO }]
+}
+transition on IS to state [52]
+
+-------------------
+lalr_state [52]: {
+  [boolean_expression ::= expression IS (*) NOT expression , {DO }]
+  [boolean_expression ::= expression IS (*) SAME AS expression , {DO }]
+}
+transition on SAME to state [54]
+transition on NOT to state [53]
+
+-------------------
+lalr_state [53]: {
+  [arithmetic_expression ::= (*) ID , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {DO PLUS MINUS MULT DIV }]
+  [expression ::= (*) STRING_CONST , {DO }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {DO PLUS MINUS MULT DIV }]
+  [expression ::= (*) arithmetic_expression , {DO }]
+  [arithmetic_expression ::= (*) INT_CONST , {DO PLUS MINUS MULT DIV }]
+  [boolean_expression ::= expression IS NOT (*) expression , {DO }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {DO PLUS MINUS MULT DIV }]
+}
+transition on INT_CONST to state [34]
+transition on expression to state [57]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [31]
+transition on STRING_CONST to state [30]
+transition on ID to state [29]
+
+-------------------
+lalr_state [54]: {
+  [boolean_expression ::= expression IS SAME (*) AS expression , {DO }]
+}
+transition on AS to state [55]
+
+-------------------
+lalr_state [55]: {
+  [boolean_expression ::= expression IS SAME AS (*) expression , {DO }]
+  [arithmetic_expression ::= (*) ID , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression MULT arithmetic_expression , {DO PLUS MINUS MULT DIV }]
+  [expression ::= (*) STRING_CONST , {DO }]
+  [arithmetic_expression ::= (*) FLOAT_CONST , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) LPAREN arithmetic_expression RPAREN , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression MINUS arithmetic_expression , {DO PLUS MINUS MULT DIV }]
+  [expression ::= (*) arithmetic_expression , {DO }]
+  [arithmetic_expression ::= (*) INT_CONST , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression DIV arithmetic_expression , {DO PLUS MINUS MULT DIV }]
+  [arithmetic_expression ::= (*) arithmetic_expression PLUS arithmetic_expression , {DO PLUS MINUS MULT DIV }]
+}
+transition on expression to state [56]
+transition on INT_CONST to state [34]
+transition on FLOAT_CONST to state [33]
+transition on LPAREN to state [32]
+transition on arithmetic_expression to state [31]
+transition on STRING_CONST to state [30]
+transition on ID to state [29]
+
+-------------------
+lalr_state [56]: {
+  [boolean_expression ::= expression IS SAME AS expression (*) , {DO }]
+}
+
+-------------------
+lalr_state [57]: {
+  [boolean_expression ::= expression IS NOT expression (*) , {DO }]
+}
+
+-------------------
+lalr_state [58]: {
+  [statement ::= (*) assignment_statement SEMICOLON , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= WHEN boolean_expression DO (*) statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= (*) statement_list statement , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_definition , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [statement ::= (*) if_statement , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= WHEN boolean_expression DO (*) statement_list ELSE statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_call SEMICOLON , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= (*) statement , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) while_statement , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on statement_list to state [59]
+transition on say_statement to state [10]
+transition on statement to state [9]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on SAY to state [6]
+transition on WHEN to state [5]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [59]: {
+  [statement ::= (*) assignment_statement SEMICOLON , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= WHEN boolean_expression DO statement_list (*) DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= statement_list (*) statement , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_definition , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [statement ::= (*) if_statement , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= WHEN boolean_expression DO statement_list (*) ELSE statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_call SEMICOLON , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) while_statement , {WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on say_statement to state [10]
+transition on statement to state [24]
+transition on ID to state [8]
+transition on ELSE to state [61]
+transition on USE to state [7]
+transition on SAY to state [6]
+transition on WHEN to state [5]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on DONE to state [60]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [60]: {
+  [if_statement ::= WHEN boolean_expression DO statement_list DONE (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [61]: {
+  [statement ::= (*) assignment_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= (*) statement_list statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_definition , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [statement ::= (*) if_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= WHEN boolean_expression DO statement_list ELSE (*) statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_call SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= (*) statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) while_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on statement_list to state [62]
+transition on say_statement to state [10]
+transition on statement to state [9]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on SAY to state [6]
+transition on WHEN to state [5]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [62]: {
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [statement ::= (*) function_definition , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) assignment_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) while_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [statement ::= (*) function_call SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= WHEN boolean_expression DO statement_list ELSE statement_list (*) DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) if_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= statement_list (*) statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on say_statement to state [10]
+transition on statement to state [24]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on WHEN to state [5]
+transition on SAY to state [6]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on DONE to state [63]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [63]: {
+  [if_statement ::= WHEN boolean_expression DO statement_list ELSE statement_list DONE (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [64]: {
+  [statement ::= function_call SEMICOLON (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+lalr_state [65]: {
+  [$START ::= program EOF (*) , {EOF }]
+}
+
+-------------------
+lalr_state [66]: {
+  [while_statement ::= LOOP boolean_expression (*) DO statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on DO to state [67]
+
+-------------------
+lalr_state [67]: {
+  [statement ::= (*) assignment_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= (*) statement_list statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_definition , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [statement ::= (*) if_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) function_call SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= (*) statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) while_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+  [while_statement ::= LOOP boolean_expression DO (*) statement_list DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on statement_list to state [68]
+transition on say_statement to state [10]
+transition on statement to state [9]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on SAY to state [6]
+transition on WHEN to state [5]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [68]: {
+  [function_call ::= (*) USE ID expression , {SEMICOLON }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list ELSE statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [variable_declaration ::= (*) ID HAS expression , {SEMICOLON }]
+  [statement ::= (*) function_definition , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) assignment_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [function_definition ::= (*) MAKE FUNCTION ID ID DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [if_statement ::= (*) WHEN boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) say_statement SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) while_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) variable_declaration SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [while_statement ::= LOOP boolean_expression DO statement_list (*) DONE , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+  [say_statement ::= (*) SAY expression , {SEMICOLON }]
+  [while_statement ::= (*) LOOP boolean_expression DO statement_list DONE , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [assignment_statement ::= (*) ID IS expression , {SEMICOLON }]
+  [statement ::= (*) function_call SEMICOLON , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement ::= (*) if_statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+  [statement_list ::= statement_list (*) statement , {WHEN LOOP SAY DONE MAKE USE ID }]
+}
+transition on assignment_statement to state [16]
+transition on MAKE to state [15]
+transition on variable_declaration to state [14]
+transition on if_statement to state [13]
+transition on while_statement to state [12]
+transition on say_statement to state [10]
+transition on statement to state [24]
+transition on ID to state [8]
+transition on USE to state [7]
+transition on WHEN to state [5]
+transition on SAY to state [6]
+transition on function_call to state [4]
+transition on LOOP to state [2]
+transition on DONE to state [69]
+transition on function_definition to state [1]
+
+-------------------
+lalr_state [69]: {
+  [while_statement ::= LOOP boolean_expression DO statement_list DONE (*) , {EOF WHEN ELSE LOOP SAY DONE MAKE USE ID }]
+}
+
+-------------------
+------- CUP v0.11b 20160615 (GIT 4ac7450) Parser Generation Summary -------
+  0 errors and 4 warnings
+  31 terminals, 13 non-terminals, and 31 productions declared, 
+  producing 70 unique parse states.
+  4 terminals declared but not used.
+  0 non-terminals declared but not used.
+  0 productions never reduced.
+  0 conflicts detected (0 expected).
+  Code written to "Parser.java", and "sym.java".
+---------------------------------------------------- (CUP v0.11b 20160615 (GIT 4ac7450))

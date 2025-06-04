@@ -22,13 +22,13 @@ public class TestScanner {
                 try {
                     token = scanner.next_token();
                     
-                    if (token.sym == Symbol.EOF) {
+                    if (token.sym == sym.EOF) {
                         break;
                     }
                     
                     tokenCount++;
                     String position = String.format("%d:%d", token.left + 1, token.right + 1);
-                    String tokenName = Symbol.getTokenName(token.sym);
+                    String tokenName = sym.terminalNames[token.sym];
                     String value = token.value != null ? token.value.toString() : "";
                     
                     System.out.printf("%-15s %-20s %s\n", position, tokenName, value);

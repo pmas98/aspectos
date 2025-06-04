@@ -4,11 +4,17 @@ import java_cup.runtime.*;
 public class IntegratedCompiler {
     public static void main(String[] args) {
         try {
+            if (args.length == 0) {
+                System.err.println("Uso: java IntegratedCompiler <arquivo.baba>");
+                System.err.println("Exemplo: java IntegratedCompiler hello.baba");
+                return;
+            }
+
+            String inputFile = args[0];
+            
             System.out.println("==========================================");
             System.out.println("    COMPILADOR FRONT-END INTEGRADO");
             System.out.println("==========================================\n");
-            
-            String inputFile = "input.txt";
             
             // ETAPA 1: ANÁLISE LÉXICA
             System.out.println("ETAPA 1: ANÁLISE LÉXICA");
@@ -29,13 +35,13 @@ public class IntegratedCompiler {
                 try {
                     token = scanner1.next_token();
                     
-                    if (token.sym == Symbol.EOF) {
+                    if (token.sym == sym.EOF) {
                         break;
                     }
                     
                     tokenCount++;
                     String position = String.format("%d:%d", token.left + 1, token.right + 1);
-                    String tokenName = Symbol.getTokenName(token.sym);
+                    String tokenName = sym.terminalNames[token.sym];
                     String value = token.value != null ? token.value.toString() : "";
                     
                     System.out.printf("%-15s %-20s %s\n", position, tokenName, value);

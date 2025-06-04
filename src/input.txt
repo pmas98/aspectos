@@ -1,59 +1,26 @@
-// Declaração de variáveis globais
-int globalVar;
-float pi;
+REMEMBER Esse é um código pra rodar BABA SCRIPT
 
-// Função principal
-int main(void) {
-    int x;
-    int y;
-    int resultado;
-    float media;
-    
-    // Atribuições
-    x = 10;
-    y = 20;
-    pi = 3.14159;
-    
-    // Operações aritméticas
-    resultado = x + y * 2;
-    media = (x + y) / 2.0;
-    
-    // Estrutura condicional
-    if (x < y) {
-        resultado = y - x;
-    } else {
-        resultado = x - y;
-    }
-    
-    // Laço while
-    while (x > 0) {
-        x = x - 1;
-        y = y + 1;
-    }
-    
-    return resultado;
-}
+REMEMBER É assim que se atribui valores
+BABA HAS 10;
+APPLE HAS 5;
 
-// Função auxiliar
-int calcular(int a, int b) {
-    int temp;
-    
-    if (a >= b) {
-        temp = a + b;
-    } else {
-        temp = a * b;
-    }
-    
-    return temp;
-}
+REMEMBER É assim que se define uma função
+MAKE FUNCTION ADD_TWO X DO
+    X IS X PLUS 2;
+    SAY X;
+BYE BYE
 
-// Função sem retorno
-void imprimir(int valor) {
-    // Simulação de impressão
-    int dummy;
-    dummy = valor;
-    
-    if (valor != 0) {
-        dummy = dummy + 1;
-    }
-}
+REMEMBER É assim que os loops funcionam
+LOOP BABA IS NOT 0 DO
+    SAY BABA;
+    BABA IS BABA MINUS 1;
+    USE ADD_TWO APPLE;
+    APPLE IS APPLE PLUS 1;
+BYE BYE
+
+REMEMBER Essas são as condicionais
+WHEN APPLE IS SAME AS 10 DO
+    SAY "BANANA";
+ELSE
+    SAY "NOT YET";
+BYE BYE
